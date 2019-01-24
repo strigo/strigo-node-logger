@@ -1,0 +1,22 @@
+{
+  "name": "strigo-node-logger",
+  "version": "0.1.1",
+  "description": "A strigo abstraction for a logger utility",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/strigo/strigo-node-logger.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/strigo/strigo-node-logger/issues"
+  },
+  "homepage": "https://github.com/strigo/strigo-node-logger#readme",
+  "dependencies": {
+    "bunyan": "1.8.12",
+    "bunyan-debug-stream": "2.0.0",
+    "bunyan-logzio": "0.0.3",
+    "express-bunyan-logger": "1.3.3",
+    "logzio-nodejs": "1.0.3"
+  }
+}
