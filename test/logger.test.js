@@ -36,11 +36,11 @@ describe('strigo-node-logger', function() {
     it('should write error printout', function() {
       const printout = chance.string();
 
-      const stdout = capture.captureStdout(() => {
+      const stderr = capture.captureStderr(() => {
         log.error(printout);
       });
 
-      expect(stdout.indexOf(printout)).to.be.gt(-1);
+      expect(stderr.indexOf(printout)).to.be.gt(-1);
     });
 
     it('should write debug printout when set up with debug level', function() {

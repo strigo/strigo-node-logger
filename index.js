@@ -24,7 +24,8 @@ function createDefaultStreams(env, level) {
   if (env === Constants.ENV_PROD) {
     streams.push(createLogzioStream());
   } else {
-    streams.push({ stream: process.stdout });
+    streams.push({ stream: process.stdout, level: 'debug' });
+    streams.push({ stream: process.stderr, level: 'error' });
   }
 
   return streams;
