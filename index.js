@@ -6,7 +6,7 @@ import expressBunyanLogger from 'express-bunyan-logger'
 
 import * as Constants from './constants';
 
-let log;
+export let log;
 
 /**
  * Create the default streams, if no explicit streams were provided.
@@ -24,7 +24,8 @@ function createDefaultStreams(env, level) {
   if (env === Constants.ENV_PROD) {
     streams.push(createLogzioStream());
   } else {
-    streams.push({ stream: process.stdout });
+    streams.push({ stream: process.stdout, level: 'debug' });
+    streams.push({ stream: process.stderr, level: 'error' });
   }
 
   return streams;
@@ -112,5 +113,3 @@ export function setupExpressLogger(appName, env, level = 'info', streams) {
     serializers,
   });
 }
-
-export default log;
