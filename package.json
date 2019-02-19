@@ -1,6 +1,6 @@
 {
   "name": "strigo-node-logger",
-  "version": "0.1.1",
+  "version": "0.0.0",
   "description": "A strigo abstraction for a logger utility",
   "main": "index.js",
   "repository": {
