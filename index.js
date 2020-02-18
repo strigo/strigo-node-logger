@@ -1,115 +1,80 @@
-import bunyan from 'bunyan';
-import bunyanDebugStream from 'bunyan-debug-stream';
-import { createLogger as createLogzioLogger } from 'logzio-nodejs';
-import { Bunyan2Logzio } from 'bunyan-logzio';
-import expressBunyanLogger from 'express-bunyan-logger'
+const { createLogger, format, transports } = require('winston');
+const expressWinston = require('express-winston');
 
-import * as Constants from './constants';
+const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
 
 export let log;
 
+// Configure the transports the logger is going to use.
+// This also allows us to directly modify the transports during runtime if necessary.
+// e.g. `configuredTransports.console.level = 'debug';`
+export const configuredTransports = {
+  console: new transports.Console()
+};
+
 /**
- * Create the default streams, if no explicit streams were provided.
+ * Create the require formatters for the logger.
+ * Note that this also differentiates "local" envs from envs in which STRIGO_ENV is configured (e.g. dev/prod).
  *
- * @param env The environment, to determine which streams are needed.
- * @param level The level to set to them.
- *
- * @returns {Array} A list of streams.
+ * @returns {Array} A list of formatters to use.
  */
-function createDefaultStreams(env, level) {
-  const streams = [
-    createDebugStream(level),
+function configureFormatters() {
+  const formatters = [
+    format.errors({ stack: true }),
+    format.metadata({ key: 'meta' }),
+    format.timestamp(),
   ];
 
-  if (env === Constants.ENV_PROD) {
-    streams.push(createLogzioStream());
+  if (process.env.STRIGO_ENV) {
+    formatters.push(format.json());
   } else {
-    streams.push({ stream: process.stdout, level: 'debug' });
-    streams.push({ stream: process.stderr, level: 'error' });
+    formatters.push(
+      format.printf(
+        (info) => {
+          const { meta } = info;
+          if (meta.err) {
+            meta.err = meta.err.toString();
+          }
+          const colorizer = format.colorize();
+          return colorizer.colorize(
+            info.level,
+            `${info.timestamp} ${info.level} ${info.message} ${JSON.stringify(meta)}`,
+          );
+        },
+      ),
+    );
   }
 
-  return streams;
+  return formatters;
 }
 
+// Setup the main logger on import. This logger can then be used directly, or propagated to
+// another logger (like the express logger).
+const winstonInstance = createLogger({
+  level: LOG_LEVEL,
+  format: format.combine(...configureFormatters()),
+  transports: [ configuredTransports.console ],
+});
+
 /**
- * Create the basic bunyan debug stream, the prettifies the JSON log entries to be human readable.
+ * Setup the log level for the main logger.
  *
- * @param level The level of the stream.
- *
- * @returns {Object} The stream.
+ * @param {*} level The level to use when setting the logger up.
  */
-function createDebugStream(level) {
-  return {
-    stream: bunyanDebugStream(),
-    level,
-    type: 'raw'
-  };
+export function setupNodeLogger(level = LOG_LEVEL) {
+  configuredTransports.console.level = level;
+  log = winstonInstance;
 }
 
 /**
- * Create a stream the pushes logs to Logz.io.
- * It assumes a Logz.io token exists in the environment variables.
+ * Setup an express logger based on the main logger.
  */
-function createLogzioStream() {
-  const logzioLogger = createLogzioLogger({ token: Constants.LOGZIO_TOKEN, protocol: 'https' });
-  return Bunyan2Logzio(logzioLogger);
-}
-
-/**
- * @returns {Object} The default serializers to be used.
- */
-function createDefaultSerializers() {
-  return {
-    err: bunyan.stdSerializers.err,
-  };
-}
-
-/**
- * @returns {Object} The serializers for a web logger.
- */
-function createWebSerializers() {
-  return {
-    req: bunyan.stdSerializers.req,
-    res: bunyan.stdSerializers.res,
-  };
-}
-
-/**
- * Setup a logger for a vanilla nodejs application.
- *
- * @param appName The name of the app, for context in the log.
- * @param env The env of the app.
- * @param level The level of the logger (default: info).
- * @param streams (optional) A list of streams. If not provided, default streams will be created according to the env.
- */
-export function setupNodeLogger(appName, env, level = 'info', streams) {
-  const finalStreams = streams && streams.length ? streams : createDefaultStreams(env, level);
-  const serializers = createDefaultSerializers();
-
-  log = bunyan.createLogger({
-    name: appName,
-    meta: { env },
-    streams: finalStreams,
-    serializers,
+export function setupExpressLogger() {
+  log = expressWinston.logger({
+    winstonInstance,
+    metaField: null,
+    colorize: false,
+    // Consul's Health check regularly bombards us with requests, so we should ignore it.
+    skip: (req) => (req.headers['user-agent'] == 'Consul Health Check' && req.url == '/'),
   });
-}
-
-/**
- * Setup a logger for an expressjs application.
- *
- * @param appName The name of the app, for context in the log.
- * @param env The env of the app.
- * @param level The level of the logger (default: info).
- * @param streams (optional) A list of streams. If not provided, default streams will be created according to the env.
- */
-export function setupExpressLogger(appName, env, level = 'info', streams) {
-  const finalStreams = streams && streams.length ? streams : createDefaultStreams(env, level);
-  const serializers = _.assign({}, createDefaultSerializers(), createWebSerializers());
-
-  log = expressBunyanLogger({
-    name: appName,
-    meta: { env },
-    streams: finalStreams,
-    serializers,
-  });
-}
+};
