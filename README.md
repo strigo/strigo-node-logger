@@ -9,21 +9,20 @@ The logger is built around the [winston logger](https://github.com/winstonjs/win
 
 ## Installation
 
-Add `"node-logger": "strigo/strigo-node-logger.git#TAG"` to your `package.json`.
+Add `"strigo-node-logger": "strigo/strigo-node-logger.git#TAG"` to your `package.json`.
 
 ## Usage
 
 ### In a vanilla node application
 
 ```javascript
-import { log, setupNodeLogger, configuredTransports } from 'node-logger';
+import { setupNodeLogger } from 'strigo-node-logger';
 
-// Optionally pass a winston level here.
-setupNodeLogger();
+const log = setupNodeLogger(env, level = 'info');
 
 log.info(...);
 
-configuredTransports.console.level = 'debug';
+log.level = 'debug';
 log.debug(...);
 // And so on...
 ```
@@ -33,9 +32,9 @@ log.debug(...);
 We use [express-winston](https://github.com/bithavoc/express-winston) here.
 
 ```javascript
-import { log, setupExpressLogger } from 'node-logger';
+import { setupExpressLogger } from 'node-logger';
 
-setupExpressLogger();
+const log = setupExpressLogger(env, level = 'info');
 
 app.use(log);
 

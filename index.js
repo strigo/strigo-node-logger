@@ -1,31 +1,21 @@
 const { createLogger, format, transports } = require('winston');
 const expressWinston = require('express-winston');
 
-const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
-
-export let log;
-
-// Configure the transports the logger is going to use.
-// This also allows us to directly modify the transports during runtime if necessary.
-// e.g. `configuredTransports.console.level = 'debug';`
-export const configuredTransports = {
-  console: new transports.Console()
-};
+const DEFAULT_LOG_LEVEL = 'info';
 
 /**
  * Create the require formatters for the logger.
- * Note that this also differentiates "local" envs from envs in which STRIGO_ENV is configured (e.g. dev/prod).
  *
  * @returns {Array} A list of formatters to use.
  */
-function configureFormatters() {
+function configureFormatters(env) {
   const formatters = [
     format.errors({ stack: true }),
     format.metadata({ key: 'meta' }),
     format.timestamp(),
   ];
 
-  if (process.env.STRIGO_ENV) {
+  if (env) {
     formatters.push(format.json());
   } else {
     formatters.push(
@@ -38,7 +28,7 @@ function configureFormatters() {
           const colorizer = format.colorize();
           return colorizer.colorize(
             info.level,
-            `${info.timestamp} ${info.level} ${info.message} ${JSON.stringify(meta)}`,
+            `${info.timestamp} - ${info.level} - ${info.message} \n${JSON.stringify(meta)}`,
           );
         },
       ),
@@ -48,33 +38,33 @@ function configureFormatters() {
   return formatters;
 }
 
-// Setup the main logger on import. This logger can then be used directly, or propagated to
-// another logger (like the express logger).
-const winstonInstance = createLogger({
-  level: LOG_LEVEL,
-  format: format.combine(...configureFormatters()),
-  transports: [ configuredTransports.console ],
-});
-
 /**
- * Setup the log level for the main logger.
+ * Setup the main logger. This logger can then be used directly, or propagated to
+ * another logger (like the express logger).
  *
- * @param {*} level The level to use when setting the logger up.
+ * @param {String} env The name of the environment to use. This affects formatting.
+ * @param {String} level The level to use when setting the logger up.
  */
-export function setupNodeLogger(level = LOG_LEVEL) {
-  configuredTransports.console.level = level;
-  log = winstonInstance;
+export function setupNodeLogger(env, level = DEFAULT_LOG_LEVEL) {
+  return createLogger({
+    level,
+    format: format.combine(...configureFormatters(env)),
+    transports: [ new transports.Console() ],
+  });
 }
 
 /**
  * Setup an express logger based on the main logger.
+ *
+ * @param {String} env The name of the environment to use. This affects formatting.
+ * @param {String} level The level to use when setting the logger up.
  */
-export function setupExpressLogger() {
-  log = expressWinston.logger({
-    winstonInstance,
+export function setupExpressLogger(env, level = DEFAULT_LOG_LEVEL) {
+  return expressWinston.logger({
+    winstonInstance : setupNodeLogger(env, level),
     metaField: null,
     colorize: false,
     // Consul's Health check regularly bombards us with requests, so we should ignore it.
     skip: (req) => (req.headers['user-agent'] == 'Consul Health Check' && req.url == '/'),
   });
-};
+}
