@@ -2,57 +2,38 @@ import chai from 'chai';
 import capture from 'capture-console';
 import Chance from 'chance';
 
-import { log, setupNodeLogger, setupExpressLogger, configuredTransports } from '..';
+import { setupNodeLogger, setupExpressLogger } from '..';
 
 const expect = chai.expect;
 const chance = new Chance();
 
 describe('strigo-node-logger', function() {
   describe('#setupNodeLogger()', function() {
-    beforeEach(() => {
-      setupNodeLogger();
-    });
+    it('should printout the configured severity level', function() {
+      const log = setupNodeLogger(null, 'warn');
 
-    it('should write info printout', function() {
-      const printout = chance.string();
-      const stdout = capture.captureStdout(() => {
-        log.info(printout);
-      });
+      let printout;
+      let stdout;
 
-      expect(stdout.indexOf(printout)).to.be.gt(-1);
-    });
-
-    it('should write warn printout', function() {
-      const printout = chance.string();
-      const stdout = capture.captureStdout(() => {
+      printout = chance.string();
+      stdout = capture.captureStdout(() => {
         log.warn(printout);
       });
 
       expect(stdout.indexOf(printout)).to.be.gt(-1);
-    });
+      expect(stdout.indexOf('warn')).to.be.gt(-1);
 
-    it('should write error printout', function() {
-      const printout = chance.string();
-      const stdout = capture.captureStdout(() => {
-        log.error(printout);
+      printout = chance.string();
+      stdout = capture.captureStdout(() => {
+        log.info(printout, { x: 'y' });
       });
 
-      expect(stdout.indexOf(printout)).to.be.gt(-1);
-    });
-
-    it('should write debug printout when set up with debug level', function() {
-      setupNodeLogger('debug');
-
-      const printout = chance.string();
-      const stdout = capture.captureStdout(() => {
-        log.debug(printout);
-      });
-
-      expect(stdout.indexOf(printout)).to.be.gt(-1);
+      expect(stdout.indexOf(printout)).to.be.eq(-1);
+      expect(stdout.indexOf('info')).to.be.eq(-1);
     });
 
     it('should not write debug printout when set up with info level', function() {
-      setupNodeLogger('info');
+      const log = setupNodeLogger('prod', 'info');
 
       const printout = chance.string();
       const stdout = capture.captureStdout(() => {
@@ -63,8 +44,8 @@ describe('strigo-node-logger', function() {
     });
 
     it('should not write debug printout when configured to info in runtime', function() {
-      setupNodeLogger('debug');
-      configuredTransports.console.level = 'info';
+      const log = setupNodeLogger('prod', 'debug');
+      log.level = 'info';
 
       const printout = chance.string();
       const stdout = capture.captureStdout(() => {
@@ -75,7 +56,7 @@ describe('strigo-node-logger', function() {
     });
 
     it('should allow setting up an express logger', function() {
-      setupExpressLogger();
+      const log = setupExpressLogger('prod', 'info');
 
       // Should be a function. This test can be better if we check for specific
       // expressWinston attributes.
