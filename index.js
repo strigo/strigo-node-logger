@@ -60,11 +60,15 @@ export function setupNodeLogger(env, level = DEFAULT_LOG_LEVEL) {
  * @param {String} level The level to use when setting the logger up.
  */
 export function setupExpressLogger(env, level = DEFAULT_LOG_LEVEL) {
-  return expressWinston.logger({
-    winstonInstance : setupNodeLogger(env, level),
+  const logger = setupNodeLogger(env, level);
+
+  const loggerMiddleware = expressWinston.logger({
+    winstonInstance: logger,
     metaField: null,
     colorize: false,
     // Consul's Health check regularly bombards us with requests, so we should ignore it.
     skip: (req) => (req.headers['user-agent'] == 'Consul Health Check' && req.url == '/'),
   });
+
+  return { logger, loggerMiddleware };
 }

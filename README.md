@@ -32,11 +32,11 @@ log.debug(...);
 We use [express-winston](https://github.com/bithavoc/express-winston) here.
 
 ```javascript
-import { setupExpressLogger } from 'node-logger';
+import { setupExpressLogger } from 'strigo-node-logger';
 
-const log = setupExpressLogger(env, level = 'info');
+const { logger: log, loggerMiddleware: middleware } = setupExpressLogger(env, level = 'info');
 
-app.use(log);
+app.use(middleware);
 
 log.info(...);
 

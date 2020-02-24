@@ -56,11 +56,18 @@ describe('strigo-node-logger', function() {
     });
 
     it('should allow setting up an express logger', function() {
-      const log = setupExpressLogger('prod', 'info');
+      const { logger: log, loggerMiddleware: middleware } = setupExpressLogger('prod', 'info');
 
       // Should be a function. This test can be better if we check for specific
       // expressWinston attributes.
-      expect({}.toString.call(log)).to.be.eq('[object Function]');
+      expect({}.toString.call(middleware)).to.be.eq('[object Function]');
+
+      const printout = chance.string();
+      const stdout = capture.captureStdout(() => {
+        log.info(printout);
+      });
+
+      expect(stdout.indexOf(printout)).to.be.gt(-1);
     });
   });
 });
