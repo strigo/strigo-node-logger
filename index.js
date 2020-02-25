@@ -71,7 +71,7 @@ function setupExpressLogger({ env = '', level = DEFAULT_LOG_LEVEL, skip = [] }) 
     winstonInstance: logger,
     metaField: null,
     colorize: false,
-    skip: (req) => [skipDefaultRequests, ...skip].every((skipFunc) => skipFunc(req)),
+    skip: (req) => [skipDefaultRequests, ...skip].some((skipFunc) => skipFunc(req)),
   });
 
   return { logger, loggerMiddleware };
