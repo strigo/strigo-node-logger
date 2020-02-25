@@ -1,16 +1,15 @@
-import chai from 'chai';
 import capture from 'capture-console';
 import Chance from 'chance';
+import { expect } from 'chai';
 
 import { setupNodeLogger, setupExpressLogger } from '..';
 
-const expect = chai.expect;
 const chance = new Chance();
 
-describe('strigo-node-logger', function() {
-  describe('#setupNodeLogger()', function() {
-    it('should printout the configured severity level', function() {
-      const log = setupNodeLogger(null, 'warn');
+describe('strigo-node-logger', () => {
+  describe('#setupNodeLogger()', () => {
+    it('should printout the configured severity level', () => {
+      const log = setupNodeLogger({ level: 'warn' });
 
       let printout;
       let stdout;
@@ -32,8 +31,8 @@ describe('strigo-node-logger', function() {
       expect(stdout.indexOf('info')).to.be.eq(-1);
     });
 
-    it('should not write debug printout when set up with info level', function() {
-      const log = setupNodeLogger('prod', 'info');
+    it('should not write debug printout when set up with info level', () => {
+      const log = setupNodeLogger({ env: 'prod', level: 'info' });
 
       const printout = chance.string();
       const stdout = capture.captureStdout(() => {
@@ -43,8 +42,8 @@ describe('strigo-node-logger', function() {
       expect(stdout.indexOf(printout)).to.be.eq(-1);
     });
 
-    it('should not write debug printout when configured to info in runtime', function() {
-      const log = setupNodeLogger('prod', 'debug');
+    it('should not write debug printout when configured to info in runtime', () => {
+      const log = setupNodeLogger({ env: 'prod', level: 'debug' });
       log.level = 'info';
 
       const printout = chance.string();
@@ -55,8 +54,8 @@ describe('strigo-node-logger', function() {
       expect(stdout.indexOf(printout)).to.be.eq(-1);
     });
 
-    it('should allow setting up an express logger', function() {
-      const { logger: log, loggerMiddleware: middleware } = setupExpressLogger('prod', 'info');
+    it('should allow setting up an express logger', () => {
+      const { logger: log, loggerMiddleware: middleware } = setupExpressLogger({ env: 'prod', level: 'info' });
 
       // Should be a function. This test can be better if we check for specific
       // expressWinston attributes.

@@ -45,12 +45,17 @@ function configureFormatters(env) {
  * @param {String} env The name of the environment to use. This affects formatting.
  * @param {String} level The level to use when setting the logger up.
  */
-function setupNodeLogger(env, level = DEFAULT_LOG_LEVEL) {
+function setupNodeLogger({ env = '', level = DEFAULT_LOG_LEVEL }) {
   return createLogger({
     level,
     format: format.combine(...configureFormatters(env)),
-    transports: [ new transports.Console() ],
+    transports: [new transports.Console()],
   });
+}
+
+function skipDefaultRequests(req) {
+  // Consul's Health check regularly bombards us with requests, so we should ignore it.
+  return (req.headers['user-agent'] === 'Consul Health Check');
 }
 
 /**
@@ -59,15 +64,14 @@ function setupNodeLogger(env, level = DEFAULT_LOG_LEVEL) {
  * @param {String} env The name of the environment to use. This affects formatting.
  * @param {String} level The level to use when setting the logger up.
  */
-function setupExpressLogger(env, level = DEFAULT_LOG_LEVEL) {
+function setupExpressLogger({ env = '', level = DEFAULT_LOG_LEVEL, skip = [] }) {
   const logger = setupNodeLogger(env, level);
 
   const loggerMiddleware = expressWinston.logger({
     winstonInstance: logger,
     metaField: null,
     colorize: false,
-    // Consul's Health check regularly bombards us with requests, so we should ignore it.
-    skip: (req) => (req.headers['user-agent'] == 'Consul Health Check' && req.url == '/'),
+    skip: (req) => [skipDefaultRequests, ...skip].every((skipFunc) => skipFunc(req)),
   });
 
   return { logger, loggerMiddleware };
@@ -75,5 +79,5 @@ function setupExpressLogger(env, level = DEFAULT_LOG_LEVEL) {
 
 module.exports = {
   setupNodeLogger,
-  setupExpressLogger
-}
+  setupExpressLogger,
+};

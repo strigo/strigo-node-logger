@@ -23,10 +23,14 @@
     "@babel/register": "7.0.0",
     "capture-console": "1.0.1",
     "chai": "4.2.0",
-    "chance": "1.0.18",
+    "chance": "1.1.4",
+    "eslint": "6.8.0",
+    "eslint-config-airbnb-base": "14.0.0",
+    "eslint-plugin-import": "2.20.1",
     "mocha": "5.2.0"
   },
   "scripts": {
+    "lint": "eslint **/*.js",
     "test": "mocha --require @babel/register"
   }
 }
