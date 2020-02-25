@@ -55,7 +55,7 @@ function setupNodeLogger({ env = '', level = DEFAULT_LOG_LEVEL }) {
 
 function skipDefaultRequests(req) {
   // Consul's Health check regularly bombards us with requests, so we should ignore it.
-  return (req.headers['user-agent'] === 'Consul Health Check');
+  return (req.headers['user-agent'] || '').includes('Consul Health Check');
 }
 
 /**
