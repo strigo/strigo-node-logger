@@ -65,7 +65,7 @@ function skipDefaultRequests(req) {
  * @param {String} level The level to use when setting the logger up.
  */
 function setupExpressLogger({ env = '', level = DEFAULT_LOG_LEVEL, skip = [] }) {
-  const logger = setupNodeLogger(env, level);
+  const logger = setupNodeLogger({ env, level });
 
   const loggerMiddleware = expressWinston.logger({
     winstonInstance: logger,

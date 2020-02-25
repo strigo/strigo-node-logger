@@ -18,7 +18,7 @@ Add `"strigo-node-logger": "strigo/strigo-node-logger.git#TAG"` to your `package
 ```javascript
 import { setupNodeLogger } from 'strigo-node-logger';
 
-const log = setupNodeLogger(env, level = 'info');
+const log = setupNodeLogger({ env = 'prod', level = 'info' });
 
 log.info(...);
 
@@ -34,7 +34,7 @@ We use [express-winston](https://github.com/bithavoc/express-winston) here.
 ```javascript
 import { setupExpressLogger } from 'strigo-node-logger';
 
-const { logger: log, loggerMiddleware: middleware } = setupExpressLogger(env, level = 'info');
+const { logger: log, loggerMiddleware: middleware } = setupExpressLogger({ env = 'prod' , level = 'info' });
 
 app.use(middleware);
 
