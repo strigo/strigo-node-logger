@@ -45,7 +45,7 @@ function configureFormatters(env) {
  * @param {String} env The name of the environment to use. This affects formatting.
  * @param {String} level The level to use when setting the logger up.
  */
-export function setupNodeLogger(env, level = DEFAULT_LOG_LEVEL) {
+function setupNodeLogger(env, level = DEFAULT_LOG_LEVEL) {
   return createLogger({
     level,
     format: format.combine(...configureFormatters(env)),
@@ -59,7 +59,7 @@ export function setupNodeLogger(env, level = DEFAULT_LOG_LEVEL) {
  * @param {String} env The name of the environment to use. This affects formatting.
  * @param {String} level The level to use when setting the logger up.
  */
-export function setupExpressLogger(env, level = DEFAULT_LOG_LEVEL) {
+function setupExpressLogger(env, level = DEFAULT_LOG_LEVEL) {
   const logger = setupNodeLogger(env, level);
 
   const loggerMiddleware = expressWinston.logger({
@@ -71,4 +71,9 @@ export function setupExpressLogger(env, level = DEFAULT_LOG_LEVEL) {
   });
 
   return { logger, loggerMiddleware };
+}
+
+module.exports = {
+  setupNodeLogger,
+  setupExpressLogger
 }
