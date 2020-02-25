@@ -1,9 +1,19 @@
 import { Logger } from 'winston';
 import { Handler } from 'express';
+import { RouteFilter } from 'express-winston';
 
 declare namespace strigoNodeLogger {
-  function setupNodeLogger(env: string, level?: string): Logger;
-  function setupExpressLogger(env: string, level?: string): { logger: Logger, loggerMiddleware: Handler };
+  type NodeLoggerOptions = {
+    env?: string;
+    level?: string;
+  }
+
+  type NodeExpressLoggerOptions = NodeLoggerOptions & {
+    skip?: RouteFilter[]
+  }
+
+  function setupNodeLogger(loggerOptions: NodeLoggerOptions): Logger;
+  function setupExpressLogger(loggerOptions: NodeExpressLoggerOptions): { logger: Logger, loggerMiddleware: Handler };
 }
 
 export = strigoNodeLogger;
