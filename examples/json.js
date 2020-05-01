@@ -1,4 +1,4 @@
-const setupNodeLogger = require('../setup-winston');
+const { setupNodeLogger } = require('../setup/winston');
 
 // initiate a logger with 'info' level and verbose output which is more human readable
 const log = setupNodeLogger({});

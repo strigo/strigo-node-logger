@@ -1,5 +1,7 @@
+// eslint-disable-next-line import/no-unresolved
 const express = require('express');
-const setupExpressLogger = require('../setup-express');
+
+const { setupExpressLogger } = require('../setup/express');
 
 const app = express();
 const port = 8080;
@@ -13,7 +15,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-// note that error logger must be attached after routes & roters
+// Note: error logger must be attached after routers
 app.use(errorLoggerMiddleware);
 
 app.listen(port);

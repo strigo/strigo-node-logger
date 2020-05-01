@@ -1,10 +1,11 @@
 const { createLogger, format, transports } = require('winston');
-const { simple, ecs } = require('./format');
-const { DEFAULT_LOG_LEVEL } = require('.');
+
+const { simple, ecs } = require('../format');
+const { DEFAULT_LOG_LEVEL } = require('..');
 
 const STRIGO_BASE = 'strigo';
 const ECS_BASE = [
-  // This is a trickc to stop metadata formatter from adding it to the metadata object.
+  // This is a trick to stop metadata formatter from adding it to the metadata object.
   // Do not remove.
   'level', 'message', 'stack', 'expressmeta',
   // Root level fields from ECS: https://www.elastic.co/guide/en/ecs/current/
@@ -57,4 +58,6 @@ function setupNodeLogger({ json = true, level = DEFAULT_LOG_LEVEL }) {
   });
 }
 
-module.exports = setupNodeLogger;
+module.exports = {
+  setupNodeLogger,
+};

@@ -36,9 +36,12 @@ log.debug(...);
 ```javascript
 import { setupExpressLogger } from 'strigo-node-logger';
 
-const { loggerMiddleware, errorLoggerMiddleware } = setupExpressLogger({});
+const { log, loggerMiddleware, errorLoggerMiddleware } = setupExpressLogger({});
 
-app.use(middleware);
+app.use(loggerMiddleware);
+
+// read docs about error logger
+app.use(errorLoggerMiddleware);
 
 log.info(...);
 
