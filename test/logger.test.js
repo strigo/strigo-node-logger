@@ -3,8 +3,7 @@ import capture from 'capture-console';
 import Chance from 'chance';
 import { expect } from 'chai';
 
-const setupNodeLogger = require('../setup-winston');
-const setupExpressLogger = require('../setup-express');
+const { setupNodeLogger, setupExpressLogger } = require('..');
 
 const chance = new Chance();
 

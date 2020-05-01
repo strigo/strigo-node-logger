@@ -1,6 +1,6 @@
 const expressWinston = require('express-winston');
 
-const setupNodeLogger = require('./winston');
+const { setupNodeLogger } = require('./winston');
 const { DEFAULT_LOG_LEVEL } = require('..');
 
 const defaultFilters = [
