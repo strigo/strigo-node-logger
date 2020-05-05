@@ -54,27 +54,28 @@ function ecsMeta(req, res) {
     },
   };
 
-  if (req.headers.referer) {
-    meta.http.request.referer = req.headers.referer;
-  }
-
-  if (req.headers['content-length']) {
-    meta.http.request.body.bytes = req.headers['content-length'];
-  }
-
-  if (req.headers['user-agent']) {
-    meta.user_agent = {
-      original: req.headers['user-agent'],
-    };
-  }
-
-  whitelistedHeaders.forEach((header) => {
-    if (req.headers[header]) {
-      meta.http.request.headers = meta.http.request.headers || {};
-      meta.http.request.headers[header] = req.headers[header];
+  if (req.headers) {
+    if (req.headers.referer) {
+      meta.http.request.referer = req.headers.referer;
     }
-  });
 
+    if (req.headers['content-length']) {
+      meta.http.request.body.bytes = req.headers['content-length'];
+    }
+
+    if (req.headers['user-agent']) {
+      meta.user_agent = {
+        original: req.headers['user-agent'],
+      };
+    }
+
+    whitelistedHeaders.forEach((header) => {
+      if (req.headers[header]) {
+        meta.http.request.headers = meta.http.request.headers || {};
+        meta.http.request.headers[header] = req.headers[header];
+      }
+    });
+  }
 
   if (req.hostname) {
     const [host, port] = req.hostname.split(':');

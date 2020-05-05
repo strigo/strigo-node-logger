@@ -4,6 +4,7 @@ import Chance from 'chance';
 import { expect } from 'chai';
 
 const { setupNodeLogger, setupExpressLogger } = require('..');
+const { ecsMeta } = require('../utils');
 
 const chance = new Chance();
 
@@ -131,5 +132,54 @@ describe('#setupExpressLogger()', () => {
     expect(logger).to.be.an('Object');
     expect(loggerMiddleware).to.be.an('Function');
     expect(errorLoggerMiddleware).to.be.an('Function');
+  });
+});
+
+
+describe('utils', () => {
+  let req = {};
+  let expected = {};
+  beforeEach(() => {
+    req = {
+      httpVersion: '1.1',
+      method: 'GET',
+      originalUrl: '/',
+      protocol: 'http',
+      ip: '127.0.0.1',
+      socket: {
+        bytesRead: 12,
+        remotePort: 33553,
+        localPort: 80,
+        localAddress: '127.0.0.1',
+      },
+    };
+
+    expected = {
+      http: {
+        protocol: req.httpVersion,
+        request: {
+          method: req.method.toLowerCase(),
+          bytes: req.socket.bytesRead,
+        },
+      },
+      url: {
+        original: req.originalUrl,
+        scheme: req.protocol,
+      },
+      client: {
+        ip: req.ip,
+        port: req.socket.remotePort,
+      },
+      server: {
+        ip: req.socket.localAddress,
+        port: req.socket.localPort,
+      },
+    };
+  });
+
+  describe('#ecsMeta()', () => {
+    it('should process minimal request object', () => {
+      expect(ecsMeta(req)).to.deep.equal(expected);
+    });
   });
 });
