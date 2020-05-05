@@ -1,7 +1,9 @@
-/* eslint-disable prefer-object-spread */
+/* eslint-disable no-param-reassign */
 const { format } = require('logform');
 const { MESSAGE } = require('triple-beam');
 const jsonStringify = require('fast-safe-stringify');
+
+const { removeEmpty } = require('../utils');
 
 /*
  * function simple (info, key)
@@ -11,21 +13,17 @@ const jsonStringify = require('fast-safe-stringify');
  *
  * src: https://github.com/winstonjs/logform/blob/master/simple.js
  */
-module.exports = format((info, key = '') => {
-  const stringifiedRest = jsonStringify(Object.assign({}, info, {
-    level: undefined,
-    message: undefined,
-    timestamp: undefined,
-    splat: undefined,
-  }));
+module.exports = format((info) => {
+  const stringifiedRest = jsonStringify({
+    ...info,
+    ...{
+      level: undefined, message: undefined, timestamp: undefined, splat: undefined,
+    },
+  }, removeEmpty);
 
-  if (stringifiedRest !== `{"${key}":{}}`) {
-    // eslint-disable-next-line no-param-reassign
-    info[MESSAGE] = `${info.timestamp} - ${info.level} - ${info.message}\n\t${stringifiedRest}`;
-  } else {
-    // eslint-disable-next-line no-param-reassign
-    info[MESSAGE] = `${info.timestamp} - ${info.level} - ${info.message}`;
+  info[MESSAGE] = `${info.timestamp} - ${info.level} - ${info.message}`;
+  if (stringifiedRest !== '{}') {
+    info[MESSAGE] += `\n\t${stringifiedRest}`;
   }
-
   return info;
 });

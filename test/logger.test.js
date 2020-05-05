@@ -10,7 +10,7 @@ const chance = new Chance();
 describe('#setupNodeLogger()', () => {
   describe('#json', () => {
     it('should printout the configured severity level', () => {
-      const log = setupNodeLogger({ level: 'warn' });
+      const log = setupNodeLogger({ json: true, level: 'warn' });
 
       let printout = chance.string();
       let stdout = capture.captureStdout(() => {
@@ -30,7 +30,7 @@ describe('#setupNodeLogger()', () => {
     });
 
     it('should not write debug printout when set up with info level', () => {
-      const log = setupNodeLogger({});
+      const log = setupNodeLogger({ json: true, level: 'info' });
 
       const printout = chance.string();
       const stdout = capture.captureStdout(() => {
@@ -41,7 +41,7 @@ describe('#setupNodeLogger()', () => {
     });
 
     it('should not write debug printout when configured to info in runtime', () => {
-      const log = setupNodeLogger({ env: 'prod', level: 'debug' });
+      const log = setupNodeLogger({ json: true, level: 'debug' });
       log.level = 'info';
 
       const printout = chance.string();
@@ -65,7 +65,7 @@ describe('#setupNodeLogger()', () => {
     });
 
     it('should correctly place metadata', () => {
-      const log = setupNodeLogger({});
+      const log = setupNodeLogger({ json: true, level: 'info' });
 
       const msg = chance.string();
       const workspace = chance.string();
@@ -80,7 +80,7 @@ describe('#setupNodeLogger()', () => {
     });
 
     it('should handle errors according to ecs', () => {
-      const log = setupNodeLogger({});
+      const log = setupNodeLogger({ json: true, level: 'info' });
 
       const errmsg = chance.string();
       const stdout = capture.captureStdout(() => {
@@ -92,9 +92,9 @@ describe('#setupNodeLogger()', () => {
     });
   });
 
-  describe('#verbose', () => {
+  describe('#non-json', () => {
     it('should printout the configured severity level', () => {
-      const log = setupNodeLogger({ json: false });
+      const log = setupNodeLogger({ json: false, level: 'info' });
 
       const msg = chance.string({ symbols: false, alpha: true });
       const stdout = capture.captureStdout(() => {
@@ -106,8 +106,8 @@ describe('#setupNodeLogger()', () => {
       expect(stdout).to.match(regex);
     });
 
-    it('should be multiline when metadata is added', () => {
-      const log = setupNodeLogger({ json: false });
+    it('should output metadata in JSON format on a separate line', () => {
+      const log = setupNodeLogger({ json: false, level: 'info' });
 
       const printout = chance.string();
       const workspace = chance.string();
@@ -126,8 +126,8 @@ describe('#setupExpressLogger()', () => {
   it('should allow setting up an express logger', () => {
     const { logger, loggerMiddleware, errorLoggerMiddleware } = setupExpressLogger({});
 
-    // it would be really good to actually mock req/res and check that
-    // the middleware actually returns logs but i have no idea how to mock that
+    // It would be really good to actually mock req/res and check that
+    // the middleware actually returns logs but I have no idea how to mock that
     expect(logger).to.be.an('Object');
     expect(loggerMiddleware).to.be.an('Function');
     expect(errorLoggerMiddleware).to.be.an('Function');

@@ -1,6 +1,6 @@
 const { setupNodeLogger } = require('../setup/winston');
 
-// initiate a logger with 'info' level and verbose output which is more human readable
+// Initiate a logger with 'info' level in JSON format
 const log = setupNodeLogger({});
 
 log.debug('dev loop feedback'); // this line won't appear as default log level is 'info'

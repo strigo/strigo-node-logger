@@ -11,18 +11,12 @@ module.exports = format((info) => {
     delete info.timestamp;
   }
 
-  if (info.level) {
-    info.log = { level: info.level, ...info.log };
-    delete info.level;
-  }
+  info.log = { level: info.level, ...info.log };
+  delete info.level;
 
   if (info.stack) {
     info.error = { stack_trace: info.stack, ...info.error };
     delete info.stack;
-  }
-
-  if (Object.keys(info.strigo).length === 0) {
-    delete info.strigo;
   }
 
   return info;

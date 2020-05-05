@@ -6,10 +6,10 @@ This is a light abstraction over a common logger.
 It provides a way to setup the logger for various applications, defaults as to where to direct logs in different cases, and a way to determine context for entries in a generic way.
 
 The logger is built around the [winston logger](https://github.com/winstonjs/winston), and
-[express-winston](https://github.com/bithavoc/express-winston) when used as middleware for Express.JS.
+[express-winston](https://github.com/bithavoc/express-winston) when used as middleware for Express.js.
 
 Make sure to go over the `winston` & `express-winston` docs to know the API of the logger.
-For Express.JS specifically, make sure to [read this](https://github.com/bithavoc/express-winston#error-logging) about binding order of the error logging middleware. 
+For Express.js specifically, make sure to [read this](https://github.com/bithavoc/express-winston#error-logging) about binding order of the error logging middleware. 
 
 ## Installation
 
@@ -48,4 +48,4 @@ log.info(...);
 // And so on...
 ```
 
-Check `examples` for more info.
+Check [examples](examples) for more info.

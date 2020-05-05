@@ -1,7 +1,7 @@
 const expressWinston = require('express-winston');
 
 const { setupNodeLogger } = require('./winston');
-const { DEFAULT_LOG_LEVEL } = require('..');
+const { DEFAULT_LOG_LEVEL } = require('../constants');
 
 const defaultFilters = [
   { agent: 'Consul Health Check', urls: ['/'], statuses: [200] },

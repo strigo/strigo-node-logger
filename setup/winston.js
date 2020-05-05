@@ -1,18 +1,9 @@
 const { createLogger, format, transports } = require('winston');
 
 const { simple, ecs } = require('../format');
-const { DEFAULT_LOG_LEVEL } = require('..');
+const { removeEmpty } = require('../utils');
+const { DEFAULT_LOG_LEVEL, STRIGO_META_NAME, ECS_RESERVED } = require('../constants');
 
-const STRIGO_BASE = 'strigo';
-const ECS_BASE = [
-  // This is a trick to stop metadata formatter from adding it to the metadata object.
-  // Do not remove.
-  'level', 'message', 'stack', 'expressmeta',
-  // Root level fields from ECS: https://www.elastic.co/guide/en/ecs/current/
-  'labels', 'tags', 'client', 'cloud', 'destination', 'event',
-  'http', 'interface', 'log', 'process', 'server', 'service', 'source',
-  'user_agent', 'trace', 'transaction', 'url',
-];
 
 /**
  * Create the require formatters for the logger.
@@ -22,7 +13,7 @@ const ECS_BASE = [
 function configureFormatters(json) {
   // Formatters order matter, make sure to test your changes
   const formatters = [
-    format.metadata({ key: STRIGO_BASE, fillExcept: ECS_BASE }),
+    format.metadata({ key: STRIGO_META_NAME, fillExcept: ECS_RESERVED }),
     format.timestamp(),
   ];
 
@@ -30,13 +21,13 @@ function configureFormatters(json) {
     formatters.push(
       format.errors({ stack: true }),
       ecs(),
-      format.json(),
+      format.json({ replacer: removeEmpty }),
     );
   } else {
     formatters.push(
       format.errors({ stack: false }),
       format.colorize({ level: true }),
-      simple(STRIGO_BASE),
+      simple(),
     );
   }
 

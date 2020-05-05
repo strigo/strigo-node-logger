@@ -1,2 +1,7 @@
-exports.ecs = require('./ecs');
-exports.simple = require('./simple');
+const ecs = require('./ecs');
+const simple = require('./simple');
+
+module.exports = {
+  ecs,
+  simple,
+};
