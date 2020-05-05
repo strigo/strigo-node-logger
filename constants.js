@@ -18,5 +18,5 @@ const ECS_RESERVED = [
 module.exports = {
   DEFAULT_LOG_LEVEL,
   STRIGO_META_NAME,
-  ECS_RESERVED
+  ECS_RESERVED,
 };

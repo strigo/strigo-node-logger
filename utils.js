@@ -12,7 +12,95 @@ function removeReservedOrEmpty(key, value) {
   return removeEmpty(key, value);
 }
 
+function requestsFilter(matchers) {
+  return (req, res) => {
+    const userAgent = req.headers['user-agent'] || '';
+
+    return matchers.some(
+      ({ agent, urls, statuses }) => userAgent.includes(agent)
+        && urls.includes(req.url)
+        && statuses.includes(res.statusCode),
+    );
+  };
+}
+
+
+function ecsMeta(req, res) {
+  const whitelistedHeaders = [
+    'x-forwarded-for',
+    'x-forwarded-proto',
+    'content-type',
+  ];
+
+  const meta = {
+    http: {
+      protocol: req.httpVersion,
+      request: {
+        method: req.method.toLowerCase(),
+        bytes: req.socket.bytesRead,
+      },
+    },
+    url: {
+      original: req.originalUrl,
+      scheme: req.protocol,
+    },
+    client: {
+      ip: req.ip,
+      port: req.socket.remotePort,
+    },
+    server: {
+      ip: req.socket.localAddress,
+      port: req.socket.localPort,
+    },
+  };
+
+  if (req.headers.referer) {
+    meta.http.request.referer = req.headers.referer;
+  }
+
+  if (req.headers['content-length']) {
+    meta.http.request.body.bytes = req.headers['content-length'];
+  }
+
+  if (req.headers['user-agent']) {
+    meta.user_agent = {
+      original: req.headers['user-agent'],
+    };
+  }
+
+  whitelistedHeaders.forEach((header) => {
+    if (req.headers[header]) {
+      meta.http.request.headers = meta.http.request.headers || {};
+      meta.http.request.headers[header] = req.headers[header];
+    }
+  });
+
+
+  if (req.hostname) {
+    const [host, port] = req.hostname.split(':');
+    meta.url.domain = host;
+    if (port) meta.url.port = Number(port);
+  }
+
+
+  if (res) {
+    meta.http = {
+      response: {
+        status_code: res.statusCode,
+      },
+      event: {
+        duration_ms: res.responseTime,
+      },
+    };
+  }
+
+  return meta;
+}
+
+
 module.exports = {
   removeEmpty,
   removeReservedOrEmpty,
+  requestsFilter,
+  ecsMeta,
 };
