@@ -3,7 +3,7 @@ const { format } = require('logform');
 const { MESSAGE } = require('triple-beam');
 const jsonStringify = require('fast-safe-stringify');
 
-const { removeEmpty } = require('../utils');
+const { removeReservedOrEmpty } = require('../utils');
 
 /*
  * function simple (info, key)
@@ -14,12 +14,7 @@ const { removeEmpty } = require('../utils');
  * src: https://github.com/winstonjs/logform/blob/master/simple.js
  */
 module.exports = format((info) => {
-  const stringifiedRest = jsonStringify({
-    ...info,
-    ...{
-      level: undefined, message: undefined, timestamp: undefined, splat: undefined,
-    },
-  }, removeEmpty);
+  const stringifiedRest = jsonStringify(info, removeReservedOrEmpty);
 
   info[MESSAGE] = `${info.timestamp} - ${info.level} - ${info.message}`;
   if (stringifiedRest !== '{}') {

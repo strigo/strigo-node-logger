@@ -7,6 +7,12 @@ function removeEmpty(key, value) {
   return Object.keys(value).length === 0 ? undefined : value;
 }
 
+function removeReservedOrEmpty(key, value) {
+  if (['level', 'message', 'timestamp', 'splat'].includes(key)) return undefined;
+  return removeEmpty(key, value);
+}
+
 module.exports = {
   removeEmpty,
+  removeReservedOrEmpty,
 };
