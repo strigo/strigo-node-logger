@@ -31,7 +31,7 @@ describe('#setupNodeLogger()', () => {
     });
 
     it('should not write debug printout when set up with info level', () => {
-      const log = setupNodeLogger({ json: true, level: 'info' });
+      const log = setupNodeLogger({ level: 'info' });
 
       const printout = chance.string();
       const stdout = capture.captureStdout(() => {
@@ -42,7 +42,7 @@ describe('#setupNodeLogger()', () => {
     });
 
     it('should not write debug printout when configured to info in runtime', () => {
-      const log = setupNodeLogger({ json: true, level: 'debug' });
+      const log = setupNodeLogger({ level: 'debug' });
       log.level = 'info';
 
       const printout = chance.string();
@@ -53,7 +53,7 @@ describe('#setupNodeLogger()', () => {
       expect(stdout).to.be.empty;
     });
 
-    it('should output JSON structure', () => {
+    it('should output JSON structure by default', () => {
       const log = setupNodeLogger({});
 
       const printout = chance.string();
