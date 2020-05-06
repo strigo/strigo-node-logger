@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const express = require('express');
 
-const { setupExpressLogger } = require('../setup/express');
+const { setupExpressLogger } = require('..');
 
 const app = express();
 const port = 8080;

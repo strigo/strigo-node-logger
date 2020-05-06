@@ -1,4 +1,4 @@
-const { setupNodeLogger } = require('../setup/winston');
+const { setupNodeLogger } = require('..');
 
 // Initiate a logger with 'info' level in JSON format
 const log = setupNodeLogger({});
