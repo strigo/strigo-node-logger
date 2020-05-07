@@ -80,7 +80,7 @@ describe('#setupNodeLogger()', () => {
       });
     });
 
-    it('should handle errors according to ecs', () => {
+    it('should handle instanceof Error according to ecs', () => {
       const log = setupNodeLogger({ json: true, level: 'info' });
 
       const errmsg = chance.string();
@@ -95,6 +95,17 @@ describe('#setupNodeLogger()', () => {
       expect(JSON.parse(stdout)).to.have.nested.property('error.stack_trace');
 
       expect(JSON.parse(stdout)).to.deep.include({ message: msg });
+    });
+
+    it('should put Error-like object into error.raw', () => {
+      const log = setupNodeLogger({ json: true, level: 'info' });
+
+      const err = { reason: msg };
+      const stdout = capture.captureStdout(() => {
+        log.info(msg, { err });
+      });
+
+      expect(JSON.parse(stdout)).to.deep.include({ error: { raw: JSON.stringify(err) } });
     });
   });
 
