@@ -9,33 +9,36 @@ const { ecsMeta } = require('../utils');
 const chance = new Chance();
 
 describe('#setupNodeLogger()', () => {
+  let msg;
+  beforeEach(() => {
+    msg = chance.string({ symbols: false, alpha: true });
+  });
+
   describe('#json', () => {
     it('should printout the configured severity level', () => {
       const log = setupNodeLogger({ json: true, level: 'warn' });
 
-      let printout = chance.string();
+      // let msg = chance.string();
       let stdout = capture.captureStdout(() => {
-        log.warn(printout);
+        log.warn(msg);
       });
 
-      expect(stdout.indexOf(printout)).to.be.gt(-1);
+      expect(stdout.indexOf(msg)).to.be.gt(-1);
       expect(stdout.indexOf('warn')).to.be.gt(-1);
 
-      printout = chance.string();
       stdout = capture.captureStdout(() => {
-        log.info(printout, { x: 'y' });
+        log.info(msg, { x: 'y' });
       });
 
-      expect(stdout.indexOf(printout)).to.be.eq(-1);
+      expect(stdout.indexOf(msg)).to.be.eq(-1);
       expect(stdout.indexOf('info')).to.be.eq(-1);
     });
 
     it('should not write debug printout when set up with info level', () => {
       const log = setupNodeLogger({ level: 'info' });
 
-      const printout = chance.string();
       const stdout = capture.captureStdout(() => {
-        log.debug(printout);
+        log.debug(msg);
       });
 
       expect(stdout).to.be.empty;
@@ -45,9 +48,8 @@ describe('#setupNodeLogger()', () => {
       const log = setupNodeLogger({ level: 'debug' });
       log.level = 'info';
 
-      const printout = chance.string();
       const stdout = capture.captureStdout(() => {
-        log.debug(printout);
+        log.debug(msg);
       });
 
       expect(stdout).to.be.empty;
@@ -56,9 +58,8 @@ describe('#setupNodeLogger()', () => {
     it('should output JSON structure by default', () => {
       const log = setupNodeLogger({});
 
-      const printout = chance.string();
       const stdout = capture.captureStdout(() => {
-        log.info(printout);
+        log.info(msg);
       });
 
       expect(JSON.parse(stdout)).to.have.all.keys('@timestamp', 'log', 'message');
@@ -68,7 +69,6 @@ describe('#setupNodeLogger()', () => {
     it('should correctly place metadata', () => {
       const log = setupNodeLogger({ json: true, level: 'info' });
 
-      const msg = chance.string();
       const workspace = chance.string();
       const tag = chance.string();
       const stdout = capture.captureStdout(() => {
@@ -84,12 +84,17 @@ describe('#setupNodeLogger()', () => {
       const log = setupNodeLogger({ json: true, level: 'info' });
 
       const errmsg = chance.string();
+      const err = new Error(errmsg);
       const stdout = capture.captureStdout(() => {
-        log.info(new Error(errmsg));
+        log.info(msg, { err });
       });
 
-      expect(JSON.parse(stdout)).to.deep.include({ message: errmsg });
+      expect(JSON.parse(stdout)).to.deep.include(
+        { error: { name: err.name, message: errmsg, stack_trace: err.stack } },
+      );
       expect(JSON.parse(stdout)).to.have.nested.property('error.stack_trace');
+
+      expect(JSON.parse(stdout)).to.deep.include({ message: msg });
     });
   });
 
@@ -97,7 +102,6 @@ describe('#setupNodeLogger()', () => {
     it('should printout the configured severity level', () => {
       const log = setupNodeLogger({ json: false, level: 'info' });
 
-      const msg = chance.string({ symbols: false, alpha: true });
       const stdout = capture.captureStdout(() => {
         log.warn(msg);
       });
@@ -110,10 +114,9 @@ describe('#setupNodeLogger()', () => {
     it('should output metadata in JSON format on a separate line', () => {
       const log = setupNodeLogger({ json: false, level: 'info' });
 
-      const printout = chance.string();
       const workspace = chance.string();
       const stdout = capture.captureStdout(() => {
-        log.warn(printout, { workspaceId: workspace });
+        log.warn(msg, { workspaceId: workspace });
       });
 
       const lines = stdout.split('\n\t');

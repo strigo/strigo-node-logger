@@ -11,7 +11,7 @@ const ECS_RESERVED = [
 
   // Do not remove.
   // A trick to stop metadata formatter from these fields it to the metadata object.
-  'level', 'message', 'stack',
+  'level', 'message',
 ];
 
 

@@ -14,10 +14,5 @@ module.exports = format((info) => {
   info.log = { level: info.level, ...info.log };
   delete info.level;
 
-  if (info.stack) {
-    info.error = { stack_trace: info.stack, ...info.error };
-    delete info.stack;
-  }
-
   return info;
 });
