@@ -18,7 +18,6 @@ describe('#setupNodeLogger()', () => {
     it('should printout the configured severity level', () => {
       const log = setupNodeLogger({ json: true, level: 'warn' });
 
-      // let msg = chance.string();
       let stdout = capture.captureStdout(() => {
         log.warn(msg);
       });
