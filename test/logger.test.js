@@ -4,7 +4,7 @@ import Chance from 'chance';
 import { expect } from 'chai';
 
 const { setupNodeLogger, setupExpressLogger } = require('..');
-const { ecsMeta } = require('../utils');
+const { ecsMeta, removeEmpty } = require('../utils');
 
 const chance = new Chance();
 
@@ -149,7 +149,7 @@ describe('#setupExpressLogger()', () => {
 });
 
 
-describe('utils', () => {
+describe('utils #ecsMeta', () => {
   let req = {};
   let expected = {};
   beforeEach(() => {
@@ -190,9 +190,34 @@ describe('utils', () => {
     };
   });
 
-  describe('#ecsMeta()', () => {
-    it('should process minimal request object', () => {
-      expect(ecsMeta(req)).to.deep.equal(expected);
+
+  it('should process minimal request object', () => {
+    expect(ecsMeta(req)).to.deep.equal(expected);
+  });
+});
+
+
+describe('utils', () => {
+  describe('#removeEmpty()', () => {
+    it('should handle undefined or null as in spec', () => {
+      expect(JSON.stringify(null, removeEmpty)).to.equal('null');
+      expect(JSON.stringify(undefined, removeEmpty)).to.equal(undefined);
+    });
+
+    it('should remove empty objects at base of object', () => {
+      expect(JSON.stringify({}, removeEmpty)).to.equal(undefined);
+      expect(JSON.stringify({ empty: {} }, removeEmpty)).to.equal('{}');
+    });
+  });
+
+  describe('#removeReservedOrEmpty()', () => {
+    it('should remove reserved fields from base', () => {
+      const input = {
+        timestamp: {}, level: {}, message: {}, splat: {}, other: { test: 123 },
+      };
+      const expected = { other: { test: 123 } };
+
+      expect(JSON.stringify(input, removeEmpty)).to.equal(JSON.stringify(expected));
     });
   });
 });
