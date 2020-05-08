@@ -33,8 +33,9 @@ function setupExpressLogger({ json = true, level = DEFAULT_LOG_LEVEL, skip = def
 
   const errorLoggerMiddleware = expressWinston.errorLogger({
     winstonInstance: logger,
+    msg: (req) => `ERROR ${req.method} ${req.originalUrl}`,
     metaField: null,
-    blacklistedMetaFields: ['trace', 'date', 'os', 'uptime', 'exception', 'process', 'error'],
+    blacklistedMetaFields: ['trace', 'date', 'os', 'uptime', 'process', 'exception', 'stack'],
     requestField: null,
     dynamicMeta: ecsMeta,
   });
