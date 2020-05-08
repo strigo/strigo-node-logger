@@ -3,7 +3,7 @@
  *
  */
 function removeEmpty(key, value) {
-  if (typeof value !== 'object') return value;
+  if (value === null || typeof value !== 'object') return value;
   return Object.keys(value).length === 0 ? undefined : value;
 }
 
