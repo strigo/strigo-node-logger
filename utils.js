@@ -25,7 +25,7 @@ function requestsFilter(matchers) {
 }
 
 
-function ecsMeta(req, res) {
+function ecsMeta(req, res, err) {
   const whitelistedHeaders = [
     'x-forwarded-for',
     'x-forwarded-proto',
@@ -60,7 +60,9 @@ function ecsMeta(req, res) {
     }
 
     if (req.headers['content-length']) {
-      meta.http.request.body.bytes = req.headers['content-length'];
+      meta.http.request.body = {
+        bytes: req.headers['content-length'],
+      };
     }
 
     if (req.headers['user-agent']) {
@@ -83,8 +85,9 @@ function ecsMeta(req, res) {
     if (port) meta.url.port = Number(port);
   }
 
-
-  if (res) {
+  // during error handling, the res part is meaningless.
+  // the actual return code and duration are logged in the regular http log
+  if (res && !err) {
     meta.http = {
       response: {
         status_code: res.statusCode,
@@ -92,6 +95,14 @@ function ecsMeta(req, res) {
       event: {
         duration_ms: res.responseTime,
       },
+    };
+  }
+
+  if (err) {
+    meta.error = {
+      type: err.name,
+      message: err.message,
+      stack_trace: err.stack,
     };
   }
 
