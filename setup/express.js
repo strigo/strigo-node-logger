@@ -5,7 +5,7 @@ const { DEFAULT_LOG_LEVEL } = require('../constants');
 const { ecsMeta, requestsFilter } = require('../utils');
 
 const defaultMatchers = [
-  { agent: 'Consul Health Check', urls: ['/'], statuses: [200] },
+  { agent: 'Consul Health Check', urls: ['/', '/api/v1/health'], statuses: [200] },
   { agent: 'Pingdom.com_bot_version', urls: ['/', '/api/v1/health'], statuses: [200] },
 ];
 
