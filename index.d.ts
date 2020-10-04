@@ -8,8 +8,14 @@ declare namespace strigoNodeLogger {
     level?: string;
   }
 
+  type SkipOptions = {
+    agent: string,
+    urls: string[],
+    statuses: number[]
+  }
+
   type NodeExpressLoggerOptions = NodeLoggerOptions & {
-    skip?: RouteFilter[]
+    skip?: SkipOptions[]
   }
 
   function setupNodeLogger(loggerOptions: NodeLoggerOptions): Logger;
