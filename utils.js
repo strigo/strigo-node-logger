@@ -104,6 +104,15 @@ function ecsMeta(req, res, err) {
       message: err.message,
       stack_trace: err.stack,
     };
+
+    if (err.innerError) {
+      meta.inner_error = {
+        type: err.innerError.name,
+        message: err.innerError.message,
+        stack_trace: err.innerError.stack,
+        details: err.innerError.details
+      }
+    }
   }
 
   return meta;
