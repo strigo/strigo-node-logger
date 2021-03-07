@@ -13,14 +13,14 @@ For Express.js specifically, make sure to [read this](https://github.com/bithavo
 
 ## Installation
 
-Add `"strigo-node-logger": "strigo/strigo-node-logger.git#TAG"` to your `package.json`.
+Add `"@strigo/node-logger": "strigo/strigo-node-logger.git#TAG"` to your `package.json`.
 
 ## Usage
 
 ### In a vanilla node application
 
 ```javascript
-import { setupNodeLogger } from 'strigo-node-logger';
+import { setupNodeLogger } from '@strigo/node-logger';
 
 const log = setupNodeLogger({ json = true, level = 'info' });
 
@@ -34,7 +34,7 @@ log.debug(...);
 ### In an ExpressJS application
 
 ```javascript
-import { setupExpressLogger } from 'strigo-node-logger';
+import { setupExpressLogger } from '@strigo/node-logger';
 
 const { log, loggerMiddleware, errorLoggerMiddleware } = setupExpressLogger({});
 
