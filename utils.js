@@ -1,3 +1,7 @@
+const isPlainObject = require('lodash.isplainobject');
+
+const { ECS_RESERVED } = require('./constants');
+
 /**
  * A replacer function for JSON.stringify. Will remove any empty objects in root of object
  *
@@ -83,6 +87,17 @@ function ecsMeta(req, res, err) {
     const [host, port] = req.hostname.split(':');
     meta.url.domain = host;
     if (port) meta.url.port = Number(port);
+  }
+
+  if (req.ctx && isPlainObject(req.ctx)) {
+    Object.entries(req.ctx).forEach(([key, value]) => {
+      // Exclude ECS reserved fields and ensure that the value is defined
+      // (double equal sign is intentional) and has primitive value (number, string, boolean)
+      // to avoid complex log structures.
+      if (!ECS_RESERVED.includes(key) && value != null && Object(value) !== value) {
+        meta[key] = value;
+      }
+    });
   }
 
   // during error handling, the res part is meaningless.
