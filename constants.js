@@ -14,7 +14,6 @@ const ECS_RESERVED = [
   'level', 'message',
 ];
 
-
 module.exports = {
   DEFAULT_LOG_LEVEL,
   STRIGO_META_NAME,

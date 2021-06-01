@@ -4,7 +4,6 @@ const { simple, ecs, errors } = require('../format');
 const { removeEmpty } = require('../utils');
 const { DEFAULT_LOG_LEVEL, STRIGO_META_NAME, ECS_RESERVED } = require('../constants');
 
-
 /**
  * Create the require formatters for the logger.
  *

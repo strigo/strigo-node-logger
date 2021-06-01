@@ -28,7 +28,6 @@ function requestsFilter(matchers) {
   };
 }
 
-
 function ecsMeta(req, res, err) {
   const whitelistedHeaders = [
     'x-forwarded-for',
@@ -123,7 +122,6 @@ function ecsMeta(req, res, err) {
 
   return meta;
 }
-
 
 module.exports = {
   removeEmpty,

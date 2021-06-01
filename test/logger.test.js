@@ -148,7 +148,6 @@ describe('#setupExpressLogger()', () => {
   });
 });
 
-
 describe('utils #ecsMeta', () => {
   let req = {};
   let expected = {};
@@ -190,12 +189,10 @@ describe('utils #ecsMeta', () => {
     };
   });
 
-
   it('should process minimal request object', () => {
     expect(ecsMeta(req)).to.deep.equal(expected);
   });
 });
-
 
 describe('utils', () => {
   describe('#removeEmpty()', () => {
