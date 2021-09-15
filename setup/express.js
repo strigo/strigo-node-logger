@@ -16,11 +16,13 @@ const defaultMatchers = [
  * @param {String} level The level to use when setting the logger up.
  * @param {Array} skip Custom log filter
  */
-function setupExpressLogger({ json = true, level = DEFAULT_LOG_LEVEL, skip = defaultMatchers }) {
-  const logger = setupNodeLogger({ json, level });
+function setupExpressLogger({
+  json = true, level = DEFAULT_LOG_LEVEL, skip = defaultMatchers, logger,
+}) {
+  const activeLogger = logger || setupNodeLogger({ json, level });
 
   const loggerMiddleware = expressWinston.logger({
-    winstonInstance: logger,
+    winstonInstance: activeLogger,
     metaField: null,
     requestField: null,
     responseField: null,
@@ -32,7 +34,7 @@ function setupExpressLogger({ json = true, level = DEFAULT_LOG_LEVEL, skip = def
   });
 
   const errorLoggerMiddleware = expressWinston.errorLogger({
-    winstonInstance: logger,
+    winstonInstance: activeLogger,
     msg: (req) => `ERROR ${req.method} ${req.originalUrl}`,
     metaField: null,
     blacklistedMetaFields: ['trace', 'date', 'os', 'uptime', 'process', 'exception', 'stack'],
@@ -40,7 +42,7 @@ function setupExpressLogger({ json = true, level = DEFAULT_LOG_LEVEL, skip = def
     dynamicMeta: ecsMeta,
   });
 
-  return { logger, loggerMiddleware, errorLoggerMiddleware };
+  return { logger: activeLogger, loggerMiddleware, errorLoggerMiddleware };
 }
 
 module.exports = {
