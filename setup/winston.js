@@ -2,7 +2,7 @@ const { createLogger, format, transports } = require('winston');
 
 const { simple, ecs, errors } = require('../format');
 const { removeEmpty } = require('../utils');
-const { DEFAULT_LOG_LEVEL, STRIGO_META_NAME, ECS_RESERVED } = require('../constants');
+const { DEFAULT_LOG_LEVEL, LOGGER_META_NAME, ECS_RESERVED } = require('../constants');
 
 /**
  * Create the require formatters for the logger.
@@ -13,7 +13,7 @@ function configureFormatters(json) {
   // Formatters order matter, make sure to test your changes
   const formatters = [
     errors(),
-    format.metadata({ key: STRIGO_META_NAME, fillExcept: ECS_RESERVED }),
+    format.metadata({ key: LOGGER_META_NAME, fillExcept: ECS_RESERVED }),
     format.timestamp(),
   ];
 

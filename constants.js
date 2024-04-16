@@ -1,7 +1,7 @@
 const DEFAULT_LOG_LEVEL = 'info';
 
 // The name of the key used for the metadata object
-const STRIGO_META_NAME = 'strigo';
+const LOGGER_META_NAME = 'xpoz';
 
 // Root level fields from ECS: https://www.elastic.co/guide/en/ecs/current/
 const ECS_RESERVED = [
@@ -16,6 +16,6 @@ const ECS_RESERVED = [
 
 module.exports = {
   DEFAULT_LOG_LEVEL,
-  STRIGO_META_NAME,
+  LOGGER_META_NAME,
   ECS_RESERVED,
 };
